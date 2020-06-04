@@ -58,7 +58,6 @@ def learning(train_index, test_index,lam):
 
     for i in range(2,dimensionN + 1):
         left_matrix[i][i] += lam
-        #print(left_matrix[i][i])
 
     for i in range(dimensionN + 1):
         right_matrix.insert(j, [sum_xy[dimensionN - i]])
@@ -66,11 +65,9 @@ def learning(train_index, test_index,lam):
     left_matrix = numpy.matrix(left_matrix)
     right_matrix = numpy.matrix(right_matrix)
 
-    print("left_matrix=", left_matrix)
+    #print("left_matrix=", left_matrix)
     #print("right_matrix=", right_matrix)
     w = left_matrix.I @ right_matrix
-    #print(w)
-    #print("w=", w)
     global_w.insert(index, w)
 
 
@@ -90,9 +87,7 @@ def learning(train_index, test_index,lam):
 
 
 for train_index, test_index in skf.split(original_train_data[:,0],original_train_data[:,1]):
-    #print("train: ", train_index, " test: ", test_index)
-    #train_data = train_data[train_index,0]
-    learning(train_index, test_index,10 * 5)
+    learning(train_index, test_index,10 ** 0)
     index+=1
 
 print(global_w)
@@ -100,15 +95,9 @@ final_w = []
 for i in range(dimensionN + 1):
     final_w.insert(i, [0])
     for j in range(k_closs_validation):
-        #print("now w is", global_w[j][i])
         final_w[i][0] += global_w[j][i].item()
     final_w[i][0] /= k_closs_validation
-    #final_w[i][0] = final_w[i].item()
-    #print("final_w[", i, "]=",final_w[i].item())
 
-#final_w2 = numpy.array(final_w, dtype=numpy.float128)
-#print(final_w)
-#print(numpy.flip(numpy.logspace(0, dimensionN, dimensionN + 1, base=2)))
 
 frange = numpy.arange(0,original_train_data[:,0].max(),1)
 
@@ -117,7 +106,6 @@ ans = []
 
 for i in frange:
     ans.append( f(i,final_w).item() )
-    #ans.append(numpy.flip(numpy.logspace(0, dimensionN, dimensionN + 1, base=i)) * final_w)
 
 pyplot.plot(original_train_data[:,0],original_train_data[:,1],'ro')
 pyplot.plot(frange,ans)
