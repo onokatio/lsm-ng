@@ -12,17 +12,17 @@ sum_x[n] == sum(x^n)
 sum_xy[n] == sum(x^n * y)
 """
 
-#train_data = train_data.loc[:,0].to_numpy(dtype=object)
+train_data = train_data.loc[:,:].to_numpy(dtype=object)
 
 #sum_x = numpy.array(None)
 sum_x = []
 sum_xy = []
 
 for i in range(dimensionN * 2 + 1):
-    sum_x = numpy.insert(sum_x, i, sum(numpy.power(train_data.loc[:,0].to_numpy(dtype=object), i)))
+    sum_x = numpy.insert(sum_x, i, sum(numpy.power(train_data[:,0], i)))
 
 for i in range(dimensionN + 1):
-    sum_xy = numpy.insert(sum_xy, i, sum(numpy.power(train_data.loc[:,0].to_numpy(dtype=object), i) * train_data.loc[:,1].to_numpy(dtype=object)))
+    sum_xy = numpy.insert(sum_xy, i, sum(numpy.power(train_data[:,0], i) * train_data[:,1]))
 
 #sum_x2 = sum(train_data.loc[:,0].values ** 2)
 #sum_y = sum(train_data.loc[:,1].values)
@@ -62,9 +62,9 @@ print(numpy.logspace(0, dimensionN, dimensionN + 1, base=3))
 def f(x):
     return numpy.matrix(numpy.flip(numpy.logspace(0, dimensionN, dimensionN + 1, base=x))) * w
 
-pyplot.plot(train_data.loc[:,0],train_data.loc[:,1],'ro')
+pyplot.plot(train_data[:,0],train_data[:,1],'ro')
 
-frange = numpy.arange(0,train_data.max()[0],1)
+frange = numpy.arange(0,train_data[:,0].max(),1)
 
 ans = []
 
