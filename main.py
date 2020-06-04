@@ -6,10 +6,6 @@ from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 
-k_closs_validation = 5
-
-#skf = StratifiedKFold(n_splits=k_closs_validation)
-skf = KFold(n_splits=k_closs_validation, shuffle=True, random_state=None)
 
 train_data = pandas.read_csv("data/lsmCompe_train.csv",header=None)
 #original_train_data = train_data
@@ -87,9 +83,10 @@ def learning(train_index, test_index,lam, dimensionN):
 def f(x,w):
     return sum(numpy.matrix(numpy.flip(numpy.logspace(0, len(w)-1, len(w), base=x))) * w)
 
-def run_sklearning(dimensionN):
+def run_sklearning(dimensionN,k_closs_validation):
     global_w = []
     index = 0;
+    skf = KFold(n_splits=k_closs_validation, shuffle=True, random_state=None)
     for train_index, test_index in skf.split(train_data[:,0],train_data[:,1]):
         w = learning(train_index, test_index, 10 ** 0, dimensionN)
         global_w.insert(index, w)
@@ -128,8 +125,9 @@ def RMSE(mytest_data,w):
     return numpy.sqrt(mean_squared_error(mytest_data[:,1],mytrain_output))
 
 dimensionN = 10
+k_closs_validation = 5
 
-w = run_sklearning(dimensionN)
+w = run_sklearning(dimensionN, k_closs_validation)
 plotw(w)
 print(w)
 
