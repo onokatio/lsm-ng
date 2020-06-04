@@ -3,7 +3,7 @@ import pandas
 import matplotlib.pyplot as pyplot
 from sklearn.model_selection import StratifiedKFold
 
-dimensionN = 6
+dimensionN = 4
 k_closs_validation = 3
 
 skf = StratifiedKFold(n_splits=k_closs_validation)
@@ -31,9 +31,6 @@ outlier_train_data = train_data[ abs((train_data[:,1] - avg)/std) >= 2 ]
 #print(outlier_train_data)
 
 #print(train_data[:,0])
-
-def f(x,w):
-    return sum(numpy.matrix(numpy.flip(numpy.logspace(0, dimensionN, dimensionN + 1, base=x))) * w)
 
 def learning(train_index, test_index,lam):
     sum_x = []
@@ -82,6 +79,9 @@ def learning(train_index, test_index,lam):
 
     #pyplot.plot(frange,ans)
 
+def f(x,w):
+    #return sum(numpy.matrix(numpy.flip(numpy.logspace(0, dimensionN, dimensionN + 1, base=x))) * w)
+    return sum(numpy.matrix(numpy.flip(numpy.logspace(0, len(w)-1, len(w), base=x))) * w)
 
 def run_sklearning():
     global_w = []
@@ -91,7 +91,6 @@ def run_sklearning():
         global_w.insert(index, w)
         index+=1
 
-    print(global_w)
     final_w = []
     for i in range(dimensionN + 1):
         final_w.insert(i, [0])
@@ -99,16 +98,20 @@ def run_sklearning():
             final_w[i][0] += global_w[j][i].item()
         final_w[i][0] /= k_closs_validation
 
+    return final_w
+
+def plotw(w):
 
     frange = numpy.arange(0,original_train_data[:,0].max(),1)
 
     ans = []
 
     for i in frange:
-        ans.append( f(i,final_w).item() )
+        ans.append( f(i,w).item() )
 
     pyplot.plot(original_train_data[:,0],original_train_data[:,1],'ro')
     pyplot.plot(frange,ans)
 
-run_sklearning()
+w = run_sklearning()
+plotw(w)
 pyplot.show()
