@@ -33,7 +33,7 @@ mytest_data = mytest_data.loc[:,:].to_numpy(dtype=object)
 
 #print(train_data[:,0])
 
-def plotw(w):
+def plotw(w,option):
 
     frange = numpy.arange(0,train_data[:,0].max(),1)
 
@@ -42,7 +42,7 @@ def plotw(w):
     for i in frange:
         ans.append( f(i,w).item() )
 
-    pyplot.plot(frange,ans)
+    pyplot.plot(frange,ans,option)
 
 
 def learning(train_index, test_index,lam, dimensionN):
@@ -101,6 +101,7 @@ def run_sklearning(dimensionN,k_closs_validation):
     skf = KFold(n_splits=k_closs_validation, shuffle=True, random_state=None)
     for train_index, test_index in skf.split(train_data[:,0],train_data[:,1]):
         w = learning(train_index, test_index, 10 ** 0, dimensionN)
+        plotw(w,'--')
         global_w.insert(index, w)
         index+=1
 
@@ -130,7 +131,7 @@ k_closs_validation = 5
 w = run_sklearning(dimensionN, k_closs_validation)
 pyplot.plot(train_data[:,0],train_data[:,1],'ro')
 pyplot.plot(mytest_data[:,0],mytest_data[:,1],'go')
-plotw(w)
+plotw(w,'')
 print(w)
 
 rmse = RMSE(mytest_data,w)
