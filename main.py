@@ -117,18 +117,21 @@ def plotw(w):
     pyplot.plot(train_data[:,0],train_data[:,1],'ro')
     pyplot.plot(frange,ans)
 
+def RMSE(mytest_data,w):
+    mytrain_output = []
+
+    for i in range(len(mytest_data)):
+        y = f(mytest_data[i][0], w)
+        mytrain_output.append(y.item())
+
+    print(mytest_data[:,1])
+    print(mytrain_output)
+    return numpy.sqrt(mean_squared_error(mytest_data[:,1],mytrain_output))
+
 w = run_sklearning()
 plotw(w)
 print(w)
 
-mytrain_output = []
-
-for i in range(len(mytest_data)):
-    y = f(mytest_data[i][0], w)
-    mytrain_output.append(y.item())
-
-print(mytest_data[:,1])
-print(mytrain_output)
-print("RMSE: ", numpy.sqrt(mean_squared_error(mytest_data[:,1],mytrain_output)))
-
+rmse = RMSE(mytest_data,w)
+print("RMSE: ", rmse)
 pyplot.show()
