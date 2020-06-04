@@ -65,8 +65,6 @@ def learning(train_index, test_index,lam):
     left_matrix = numpy.matrix(left_matrix)
     right_matrix = numpy.matrix(right_matrix)
 
-    #print("left_matrix=", left_matrix)
-    #print("right_matrix=", right_matrix)
     w = left_matrix.I @ right_matrix
     global_w.insert(index, w)
 
