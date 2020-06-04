@@ -33,6 +33,18 @@ mytest_data = mytest_data.loc[:,:].to_numpy(dtype=object)
 
 #print(train_data[:,0])
 
+def plotw(w):
+
+    frange = numpy.arange(0,train_data[:,0].max(),1)
+
+    ans = []
+
+    for i in frange:
+        ans.append( f(i,w).item() )
+
+    pyplot.plot(frange,ans)
+
+
 def learning(train_index, test_index,lam, dimensionN):
     sum_x = []
     sum_xy = []
@@ -101,17 +113,6 @@ def run_sklearning(dimensionN,k_closs_validation):
 
     return final_w
 
-def plotw(w):
-
-    frange = numpy.arange(0,train_data[:,0].max(),1)
-
-    ans = []
-
-    for i in frange:
-        ans.append( f(i,w).item() )
-
-    pyplot.plot(frange,ans)
-
 def RMSE(mytest_data,w):
     mytrain_output = []
 
@@ -119,8 +120,8 @@ def RMSE(mytest_data,w):
         y = f(mytest_data[i][0], w)
         mytrain_output.append(y.item())
 
-    print(mytest_data[:,1])
-    print(mytrain_output)
+    #print(mytest_data[:,1])
+    #print(mytrain_output)
     return numpy.sqrt(mean_squared_error(mytest_data[:,1],mytrain_output))
 
 dimensionN = 10
