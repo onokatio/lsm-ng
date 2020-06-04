@@ -33,10 +33,8 @@ outlier_train_data = train_data[ abs((train_data[:,1] - avg)/std) >= 2 ]
 print(train_data[:,0])
 global_w = []
 index = 0;
-for train_index, test_index in skf.split(original_train_data[:,0],original_train_data[:,1]):
-    #print("train: ", train_index, " test: ", test_index)
-    #train_data = train_data[train_index,0]
 
+def learning(train_index, test_index):
     sum_x = []
     sum_xy = []
 
@@ -70,7 +68,7 @@ for train_index, test_index in skf.split(original_train_data[:,0],original_train
     def f(x):
         return numpy.matrix(numpy.flip(numpy.logspace(0, dimensionN, dimensionN + 1, base=x))) * w
 
-#pyplot.plot(original_train_data[:,0],original_train_data[:,1],'ro')
+    #pyplot.plot(original_train_data[:,0],original_train_data[:,1],'ro')
     pyplot.plot(train_data[train_index,0],train_data[train_index,1],'ro')
     #pyplot.plot(outlier_train_data[train_index,0],outlier_train_data[train_index,1],'bo')
     pyplot.plot(train_data[test_index,0],train_data[test_index,1],'go')
@@ -84,9 +82,14 @@ for train_index, test_index in skf.split(original_train_data[:,0],original_train
 
     pyplot.plot(frange,ans)
 
-    #pyplot.show()
+
+for train_index, test_index in skf.split(original_train_data[:,0],original_train_data[:,1]):
+    #print("train: ", train_index, " test: ", test_index)
+    #train_data = train_data[train_index,0]
+    learning(train_index, test_index)
     index+=1
 
+#pyplot.show()
 print(global_w)
 final_w = []
 for i in range(dimensionN + 1):
@@ -96,3 +99,4 @@ for i in range(dimensionN + 1):
     final_w[i] /= k_closs_validation
 
 print(final_w)
+
