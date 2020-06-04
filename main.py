@@ -3,15 +3,18 @@ import pandas
 import matplotlib.pyplot as pyplot
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import KFold
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
 
-dimensionN = 6
+dimensionN = 10
 k_closs_validation = 5
 
 #skf = StratifiedKFold(n_splits=k_closs_validation)
 skf = KFold(n_splits=k_closs_validation, shuffle=True, random_state=None)
 
 train_data = pandas.read_csv("data/lsmCompe_train.csv",header=None)
-original_train_data = train_data
+#original_train_data = train_data
+train_data, mytest_data = train_test_split(train_data, test_size=0.25)
 test_data = pandas.read_csv("data/lsmCompe_test.csv",header=None)
 
 """
@@ -23,7 +26,8 @@ avg = train_data.mean()[1]
 std = train_data.std()[1]
 
 train_data = train_data.loc[:,:].to_numpy(dtype=object)
-original_train_data = original_train_data.loc[:,:].to_numpy(dtype=numpy.int64)
+mytest_data = mytest_data.loc[:,:].to_numpy(dtype=object)
+#original_train_data = original_train_data.loc[:,:].to_numpy(dtype=numpy.int64)
 
 #print(abs((train_data[:,1] - avg)/std))
 
@@ -82,13 +86,12 @@ def learning(train_index, test_index,lam):
     #pyplot.plot(frange,ans)
 
 def f(x,w):
-    #return sum(numpy.matrix(numpy.flip(numpy.logspace(0, dimensionN, dimensionN + 1, base=x))) * w)
     return sum(numpy.matrix(numpy.flip(numpy.logspace(0, len(w)-1, len(w), base=x))) * w)
 
 def run_sklearning():
     global_w = []
     index = 0;
-    for train_index, test_index in skf.split(original_train_data[:,0],original_train_data[:,1]):
+    for train_index, test_index in skf.split(train_data[:,0],train_data[:,1]):
         w = learning(train_index, test_index,10 ** 0)
         global_w.insert(index, w)
         index+=1
@@ -104,17 +107,28 @@ def run_sklearning():
 
 def plotw(w):
 
-    frange = numpy.arange(0,original_train_data[:,0].max(),1)
+    frange = numpy.arange(0,train_data[:,0].max(),1)
 
     ans = []
 
     for i in frange:
         ans.append( f(i,w).item() )
 
-    pyplot.plot(original_train_data[:,0],original_train_data[:,1],'ro')
+    pyplot.plot(train_data[:,0],train_data[:,1],'ro')
     pyplot.plot(frange,ans)
 
 w = run_sklearning()
 plotw(w)
 print(w)
+
+mytrain_output = []
+
+for i in range(len(mytest_data)):
+    y = f(mytest_data[i][0], w)
+    mytrain_output.append(y.item())
+
+print(mytest_data[:,1])
+print(mytrain_output)
+print("RMSE: ", numpy.sqrt(mean_squared_error(mytest_data[:,1],mytrain_output)))
+
 pyplot.show()
