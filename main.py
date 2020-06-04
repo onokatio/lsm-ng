@@ -17,7 +17,7 @@ sum_x = []
 sum_xy = []
 
 for i in range(dimensionN * 2 + 1):
-    sum_x = numpy.insert(sum_x, i, sum(numpy.power(train_data.loc[:,0].to_numpy(dtype=numpy.float128), i)))
+    sum_x = numpy.insert(sum_x, i, sum(numpy.power(train_data.loc[:,0].to_numpy(dtype=object), i)))
     #sum_x.insert(i, sum(train_data.loc[:,0].values ** i))
 
 for i in range(dimensionN + 1):
