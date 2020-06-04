@@ -17,8 +17,8 @@ sum_x[n] == sum(x^n)
 sum_xy[n] == sum(x^n * y)
 """
 
-avg = train_data.mean()[1]
-std = train_data.std()[1]
+#avg = train_data.mean()[1]
+#std = train_data.std()[1]
 
 train_data = train_data.loc[:,:].to_numpy(dtype=object)
 mytest_data = mytest_data.loc[:,:].to_numpy(dtype=object)
@@ -27,7 +27,7 @@ mytest_data = mytest_data.loc[:,:].to_numpy(dtype=object)
 #print(abs((train_data[:,1] - avg)/std))
 
 #train_data = train_data[ abs((train_data[:,1] - avg)/std) < 2 ]
-outlier_train_data = train_data[ abs((train_data[:,1] - avg)/std) >= 2 ]
+#outlier_train_data = train_data[ abs((train_data[:,1] - avg)/std) >= 2 ]
 
 #print(outlier_train_data)
 
@@ -110,7 +110,6 @@ def plotw(w):
     for i in frange:
         ans.append( f(i,w).item() )
 
-    pyplot.plot(train_data[:,0],train_data[:,1],'ro')
     pyplot.plot(frange,ans)
 
 def RMSE(mytest_data,w):
@@ -128,6 +127,8 @@ dimensionN = 10
 k_closs_validation = 5
 
 w = run_sklearning(dimensionN, k_closs_validation)
+pyplot.plot(train_data[:,0],train_data[:,1],'ro')
+pyplot.plot(mytest_data[:,0],mytest_data[:,1],'go')
 plotw(w)
 print(w)
 
