@@ -30,9 +30,7 @@ outlier_train_data = train_data[ abs((train_data[:,1] - avg)/std) >= 2 ]
 
 #print(outlier_train_data)
 
-print(train_data[:,0])
-global_w = []
-index = 0;
+#print(train_data[:,0])
 
 def f(x,w):
     return sum(numpy.matrix(numpy.flip(numpy.logspace(0, dimensionN, dimensionN + 1, base=x))) * w)
@@ -66,7 +64,8 @@ def learning(train_index, test_index,lam):
     right_matrix = numpy.matrix(right_matrix)
 
     w = left_matrix.I @ right_matrix
-    global_w.insert(index, w)
+    #global_w.insert(index, w)
+    return w
 
 
     #pyplot.plot(train_data[train_index,0],train_data[train_index,1],'ro')
@@ -84,28 +83,32 @@ def learning(train_index, test_index,lam):
     #pyplot.plot(frange,ans)
 
 
-for train_index, test_index in skf.split(original_train_data[:,0],original_train_data[:,1]):
-    learning(train_index, test_index,10 ** 0)
-    index+=1
+def run_sklearning():
+    global_w = []
+    index = 0;
+    for train_index, test_index in skf.split(original_train_data[:,0],original_train_data[:,1]):
+        w = learning(train_index, test_index,10 ** 0)
+        global_w.insert(index, w)
+        index+=1
 
-print(global_w)
-final_w = []
-for i in range(dimensionN + 1):
-    final_w.insert(i, [0])
-    for j in range(k_closs_validation):
-        final_w[i][0] += global_w[j][i].item()
-    final_w[i][0] /= k_closs_validation
+    print(global_w)
+    final_w = []
+    for i in range(dimensionN + 1):
+        final_w.insert(i, [0])
+        for j in range(k_closs_validation):
+            final_w[i][0] += global_w[j][i].item()
+        final_w[i][0] /= k_closs_validation
 
 
-frange = numpy.arange(0,original_train_data[:,0].max(),1)
+    frange = numpy.arange(0,original_train_data[:,0].max(),1)
 
+    ans = []
 
-ans = []
+    for i in frange:
+        ans.append( f(i,final_w).item() )
 
-for i in frange:
-    ans.append( f(i,final_w).item() )
+    pyplot.plot(original_train_data[:,0],original_train_data[:,1],'ro')
+    pyplot.plot(frange,ans)
 
-pyplot.plot(original_train_data[:,0],original_train_data[:,1],'ro')
-pyplot.plot(frange,ans)
-
+run_sklearning()
 pyplot.show()
