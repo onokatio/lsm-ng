@@ -7,14 +7,23 @@ dimensionN = 3
 train_data = pandas.read_csv("data/lsmCompe_train.csv",header=None)
 test_data = pandas.read_csv("data/lsmCompe_test.csv",header=None)
 
+"""
+sum_x[n] == sum(x^n)
+sum_xy[n] == sum(x^n * y)
+"""
+
 sum_x = []
+sum_xy = []
+
+for i in range(dimensionN * 2):
+    sum_x.insert(i, sum(train_data.loc[:,0].values ** i))
 
 for i in range(dimensionN):
-    sum_x.insert(i, sum(train_data.loc[:,0].values ** i))
+    sum_xy.insert(i, sum((train_data.loc[:,0].values ** i) * train_data.loc[:,1].values))
 
 #sum_x2 = sum(train_data.loc[:,0].values ** 2)
 sum_y = sum(train_data.loc[:,1].values)
-sum_xy = sum(train_data.loc[:,0].values * train_data.loc[:,1].values)
+#sum_xy = sum(train_data.loc[:,0].values * train_data.loc[:,1].values)
 sum_1 = train_data.index.stop
 
 #print(sum_1)
@@ -24,9 +33,9 @@ sum_1 = train_data.index.stop
 #print(sum_xy)
 
 left_matrix = numpy.matrix([[sum_x[2], sum_x[1]]
-                           ,[sum_x[1],  sum_1]])
-right_matrix = numpy.matrix([[sum_xy],
-                             [sum_y]])
+                           ,[sum_x[1],  sum_x[0]]])
+right_matrix = numpy.matrix([[sum_xy[1]],
+                             [sum_xy[0]]])
 
 (a,b) = left_matrix.I @ right_matrix
 (a,b) = (a.item(),b.item())
