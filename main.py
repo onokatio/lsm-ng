@@ -5,6 +5,7 @@ import matplotlib.pyplot as pyplot
 dimensionN = 6
 
 train_data = pandas.read_csv("data/lsmCompe_train.csv",header=None)
+original_train_data = train_data
 test_data = pandas.read_csv("data/lsmCompe_test.csv",header=None)
 
 """
@@ -12,7 +13,18 @@ sum_x[n] == sum(x^n)
 sum_xy[n] == sum(x^n * y)
 """
 
+avg = train_data.mean()[1]
+std = train_data.std()[1]
+
 train_data = train_data.loc[:,:].to_numpy(dtype=object)
+original_train_data = original_train_data.loc[:,:].to_numpy(dtype=object)
+
+print(abs((train_data[:,1] - avg)/std))
+
+#train_data = train_data[ abs((train_data[:,1] - avg)/std) < 2 ]
+outlier_train_data = train_data[ abs((train_data[:,1] - avg)/std) >= 2 ]
+
+print(outlier_train_data)
 
 sum_x = []
 sum_xy = []
@@ -50,7 +62,9 @@ print(numpy.logspace(0, dimensionN, dimensionN + 1, base=3))
 def f(x):
     return numpy.matrix(numpy.flip(numpy.logspace(0, dimensionN, dimensionN + 1, base=x))) * w
 
+#pyplot.plot(original_train_data[:,0],original_train_data[:,1],'ro')
 pyplot.plot(train_data[:,0],train_data[:,1],'ro')
+pyplot.plot(outlier_train_data[:,0],outlier_train_data[:,1],'bo')
 
 frange = numpy.arange(0,train_data[:,0].max(),1)
 
