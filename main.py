@@ -2,7 +2,7 @@ import numpy
 import pandas
 import matplotlib.pyplot as pyplot
 
-dimensionN = 4
+dimensionN = 6
 
 train_data = pandas.read_csv("data/lsmCompe_train.csv",header=None)
 test_data = pandas.read_csv("data/lsmCompe_test.csv",header=None)
@@ -12,11 +12,12 @@ sum_x[n] == sum(x^n)
 sum_xy[n] == sum(x^n * y)
 """
 
-sum_x = numpy.array(None)
+#sum_x = numpy.array(None)
+sum_x = []
 sum_xy = []
 
 for i in range(dimensionN * 2 + 1):
-    sum_x = numpy.insert(sum_x, i, sum(train_data.loc[:,0].values ** i))
+    sum_x = numpy.insert(sum_x, i, sum(numpy.power(train_data.loc[:,0].to_numpy(dtype=numpy.float128), i)))
     #sum_x.insert(i, sum(train_data.loc[:,0].values ** i))
 
 for i in range(dimensionN + 1):
@@ -48,7 +49,9 @@ for i in range(dimensionN + 1):
 left_matrix = numpy.matrix(left_matrix)
 right_matrix = numpy.matrix(right_matrix)
 
+print("left_matrix=")
 print(left_matrix)
+print("right_matrix=")
 print(right_matrix)
 w = left_matrix.I @ right_matrix
 #(a,b) = (a.item(),b.item())
