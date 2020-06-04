@@ -2,7 +2,7 @@ import numpy
 import pandas
 import matplotlib.pyplot as pyplot
 
-dimensionN = 1
+dimensionN = 4
 
 train_data = pandas.read_csv("data/lsmCompe_train.csv",header=None)
 test_data = pandas.read_csv("data/lsmCompe_test.csv",header=None)
@@ -12,11 +12,12 @@ sum_x[n] == sum(x^n)
 sum_xy[n] == sum(x^n * y)
 """
 
-sum_x = []
+sum_x = numpy.array(None)
 sum_xy = []
 
 for i in range(dimensionN * 2 + 1):
-    sum_x.insert(i, sum(train_data.loc[:,0].values ** i))
+    sum_x = numpy.insert(sum_x, i, sum(train_data.loc[:,0].values ** i))
+    #sum_x.insert(i, sum(train_data.loc[:,0].values ** i))
 
 for i in range(dimensionN + 1):
     sum_xy.insert(i, sum((train_data.loc[:,0].values ** i) * train_data.loc[:,1].values))
@@ -49,16 +50,23 @@ right_matrix = numpy.matrix(right_matrix)
 
 print(left_matrix)
 print(right_matrix)
-(a,b) = left_matrix.I @ right_matrix
-(a,b) = (a.item(),b.item())
+w = left_matrix.I @ right_matrix
+#(a,b) = (a.item(),b.item())
 
-print(a)
-print(b)
+print(numpy.logspace(0, dimensionN, dimensionN + 1, base=3))
 
 def f(x):
-    return a*x + b
+    return numpy.matrix(numpy.flip(numpy.logspace(0, dimensionN, dimensionN + 1, base=x))) * w
 
 pyplot.plot(train_data.loc[:,0],train_data.loc[:,1],'ro')
+
 frange = numpy.arange(0,train_data.max()[0],1)
-pyplot.plot(frange,f(frange))
+
+ans = []
+
+for i in frange:
+    ans.append( f(i).item() )
+
+pyplot.plot(frange,ans)
+
 pyplot.show()
