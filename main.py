@@ -6,7 +6,6 @@ from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 
-dimensionN = 10
 k_closs_validation = 5
 
 #skf = StratifiedKFold(n_splits=k_closs_validation)
@@ -38,7 +37,7 @@ outlier_train_data = train_data[ abs((train_data[:,1] - avg)/std) >= 2 ]
 
 #print(train_data[:,0])
 
-def learning(train_index, test_index,lam):
+def learning(train_index, test_index,lam, dimensionN):
     sum_x = []
     sum_xy = []
 
@@ -88,11 +87,11 @@ def learning(train_index, test_index,lam):
 def f(x,w):
     return sum(numpy.matrix(numpy.flip(numpy.logspace(0, len(w)-1, len(w), base=x))) * w)
 
-def run_sklearning():
+def run_sklearning(dimensionN):
     global_w = []
     index = 0;
     for train_index, test_index in skf.split(train_data[:,0],train_data[:,1]):
-        w = learning(train_index, test_index,10 ** 0)
+        w = learning(train_index, test_index, 10 ** 0, dimensionN)
         global_w.insert(index, w)
         index+=1
 
@@ -128,7 +127,9 @@ def RMSE(mytest_data,w):
     print(mytrain_output)
     return numpy.sqrt(mean_squared_error(mytest_data[:,1],mytrain_output))
 
-w = run_sklearning()
+dimensionN = 10
+
+w = run_sklearning(dimensionN)
 plotw(w)
 print(w)
 
