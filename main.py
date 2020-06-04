@@ -2,11 +2,13 @@ import numpy
 import pandas
 import matplotlib.pyplot as pyplot
 from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import KFold
 
-dimensionN = 4
-k_closs_validation = 3
+dimensionN = 6
+k_closs_validation = 5
 
-skf = StratifiedKFold(n_splits=k_closs_validation)
+#skf = StratifiedKFold(n_splits=k_closs_validation)
+skf = KFold(n_splits=k_closs_validation, shuffle=True, random_state=None)
 
 train_data = pandas.read_csv("data/lsmCompe_train.csv",header=None)
 original_train_data = train_data
@@ -114,4 +116,5 @@ def plotw(w):
 
 w = run_sklearning()
 plotw(w)
+print(w)
 pyplot.show()
