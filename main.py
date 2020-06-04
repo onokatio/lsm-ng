@@ -34,6 +34,9 @@ print(train_data[:,0])
 global_w = []
 index = 0;
 
+def f(x,w):
+    return numpy.matrix(numpy.flip(numpy.logspace(0, dimensionN, dimensionN + 1, base=x))) * w
+
 def learning(train_index, test_index):
     sum_x = []
     sum_xy = []
@@ -65,8 +68,6 @@ def learning(train_index, test_index):
     #print("w=", w)
     global_w.insert(index, w)
 
-    def f(x):
-        return numpy.matrix(numpy.flip(numpy.logspace(0, dimensionN, dimensionN + 1, base=x))) * w
 
     #pyplot.plot(original_train_data[:,0],original_train_data[:,1],'ro')
     pyplot.plot(train_data[train_index,0],train_data[train_index,1],'ro')
@@ -78,7 +79,7 @@ def learning(train_index, test_index):
     ans = []
 
     for i in frange:
-        ans.append( f(i).item() )
+        ans.append( f(i,w).item() )
 
     pyplot.plot(frange,ans)
 
@@ -89,7 +90,6 @@ for train_index, test_index in skf.split(original_train_data[:,0],original_train
     learning(train_index, test_index)
     index+=1
 
-#pyplot.show()
 print(global_w)
 final_w = []
 for i in range(dimensionN + 1):
@@ -97,6 +97,7 @@ for i in range(dimensionN + 1):
     for j in range(k_closs_validation):
         final_w[i] += global_w[j][i]
     final_w[i] /= k_closs_validation
+    print("final_w[", i, "]=",final_w[i].item())
 
-print(final_w)
 
+pyplot.show()
