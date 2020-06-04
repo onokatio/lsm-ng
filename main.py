@@ -2,28 +2,37 @@ import numpy
 import pandas
 import matplotlib.pyplot as pyplot
 
+dimensionN = 3
+
 train_data = pandas.read_csv("data/lsmCompe_train.csv",header=None)
 test_data = pandas.read_csv("data/lsmCompe_test.csv",header=None)
 
-sum_x = sum(train_data.loc[:,0].values)
-sum_x2 = sum(train_data.loc[:,0].values ** 2)
+sum_x = []
+
+for i in range(dimensionN):
+    sum_x.insert(i, sum(train_data.loc[:,0].values ** i))
+
+#sum_x2 = sum(train_data.loc[:,0].values ** 2)
 sum_y = sum(train_data.loc[:,1].values)
 sum_xy = sum(train_data.loc[:,0].values * train_data.loc[:,1].values)
 sum_1 = train_data.index.stop
 
-print(sum_1)
-print(sum_x)
-print(sum_x2)
-print(sum_y)
-print(sum_xy)
+#print(sum_1)
+#print(sum_x)
+#print(sum_x2)
+#print(sum_y)
+#print(sum_xy)
 
-left_matrix = numpy.matrix([[sum_x2, sum_x]
-                           ,[sum_x,  sum_1]])
+left_matrix = numpy.matrix([[sum_x[2], sum_x[1]]
+                           ,[sum_x[1],  sum_1]])
 right_matrix = numpy.matrix([[sum_xy],
                              [sum_y]])
 
 (a,b) = left_matrix.I @ right_matrix
 (a,b) = (a.item(),b.item())
+
+print(a)
+print(b)
 
 def f(x):
     return a*x + b
