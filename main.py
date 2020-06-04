@@ -14,7 +14,6 @@ sum_xy[n] == sum(x^n * y)
 
 train_data = train_data.loc[:,:].to_numpy(dtype=object)
 
-#sum_x = numpy.array(None)
 sum_x = []
 sum_xy = []
 
@@ -23,17 +22,6 @@ for i in range(dimensionN * 2 + 1):
 
 for i in range(dimensionN + 1):
     sum_xy = numpy.insert(sum_xy, i, sum(numpy.power(train_data[:,0], i) * train_data[:,1]))
-
-#sum_x2 = sum(train_data.loc[:,0].values ** 2)
-#sum_y = sum(train_data.loc[:,1].values)
-#sum_xy = sum(train_data.loc[:,0].values * train_data.loc[:,1].values)
-#sum_1 = train_data.index.stop
-
-#print(sum_1)
-#print(sum_x)
-#print(sum_x2)
-#print(sum_y)
-#print(sum_xy)
 
 left_matrix = []
 right_matrix = []
