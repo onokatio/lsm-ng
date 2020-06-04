@@ -57,7 +57,7 @@ def learning(train_index, test_index,lam):
         left_matrix.insert(i, item)
 
     for i in range(2,dimensionN + 1):
-        left_matrix[i][i] -= 10 ** lam
+        left_matrix[i][i] += lam
         #print(left_matrix[i][i])
 
     for i in range(dimensionN + 1):
@@ -92,7 +92,7 @@ def learning(train_index, test_index,lam):
 for train_index, test_index in skf.split(original_train_data[:,0],original_train_data[:,1]):
     #print("train: ", train_index, " test: ", test_index)
     #train_data = train_data[train_index,0]
-    learning(train_index, test_index,0)
+    learning(train_index, test_index,10 * 5)
     index+=1
 
 print(global_w)
