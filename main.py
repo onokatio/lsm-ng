@@ -37,7 +37,7 @@ index = 0;
 def f(x,w):
     return sum(numpy.matrix(numpy.flip(numpy.logspace(0, dimensionN, dimensionN + 1, base=x))) * w)
 
-def learning(train_index, test_index):
+def learning(train_index, test_index,lam):
     sum_x = []
     sum_xy = []
 
@@ -56,6 +56,10 @@ def learning(train_index, test_index):
             item.insert(j, sum_x[2*dimensionN - i - j])
         left_matrix.insert(i, item)
 
+    for i in range(2,dimensionN + 1):
+        left_matrix[i][i] -= 10 ** lam
+        #print(left_matrix[i][i])
+
     for i in range(dimensionN + 1):
         right_matrix.insert(j, [sum_xy[dimensionN - i]])
 
@@ -63,32 +67,32 @@ def learning(train_index, test_index):
     right_matrix = numpy.matrix(right_matrix)
 
     print("left_matrix=", left_matrix)
-    print("right_matrix=", right_matrix)
+    #print("right_matrix=", right_matrix)
     w = left_matrix.I @ right_matrix
-    print(w)
+    #print(w)
     #print("w=", w)
     global_w.insert(index, w)
 
 
-    #pyplot.plot(original_train_data[:,0],original_train_data[:,1],'ro')
-    pyplot.plot(train_data[train_index,0],train_data[train_index,1],'ro')
-    #pyplot.plot(outlier_train_data[train_index,0],outlier_train_data[train_index,1],'bo')
-    #pyplot.plot(train_data[test_index,0],train_data[test_index,1],'go')
+    #pyplot.plot(train_data[train_index,0],train_data[train_index,1],'ro')
 
-    frange = numpy.arange(0,original_train_data[:,0].max(),1)
+    ##pyplot.plot(outlier_train_data[train_index,0],outlier_train_data[train_index,1],'bo')
+    ##pyplot.plot(train_data[test_index,0],train_data[test_index,1],'go')
 
-    ans = []
+    #frange = numpy.arange(0,original_train_data[:,0].max(),1)
 
-    for i in frange:
-        ans.append( f(i,w).item() )
+    #ans = []
 
-    pyplot.plot(frange,ans)
+    #for i in frange:
+    #    ans.append( f(i,w).item() )
+
+    #pyplot.plot(frange,ans)
 
 
 for train_index, test_index in skf.split(original_train_data[:,0],original_train_data[:,1]):
     #print("train: ", train_index, " test: ", test_index)
     #train_data = train_data[train_index,0]
-    learning(train_index, test_index)
+    learning(train_index, test_index,0)
     index+=1
 
 print(global_w)
@@ -96,15 +100,15 @@ final_w = []
 for i in range(dimensionN + 1):
     final_w.insert(i, [0])
     for j in range(k_closs_validation):
-        print("now w is", global_w[j][i])
+        #print("now w is", global_w[j][i])
         final_w[i][0] += global_w[j][i].item()
     final_w[i][0] /= k_closs_validation
     #final_w[i][0] = final_w[i].item()
     #print("final_w[", i, "]=",final_w[i].item())
 
 #final_w2 = numpy.array(final_w, dtype=numpy.float128)
-print(final_w)
-print(numpy.flip(numpy.logspace(0, dimensionN, dimensionN + 1, base=2)))
+#print(final_w)
+#print(numpy.flip(numpy.logspace(0, dimensionN, dimensionN + 1, base=2)))
 
 frange = numpy.arange(0,original_train_data[:,0].max(),1)
 
@@ -115,6 +119,7 @@ for i in frange:
     ans.append( f(i,final_w).item() )
     #ans.append(numpy.flip(numpy.logspace(0, dimensionN, dimensionN + 1, base=i)) * final_w)
 
+pyplot.plot(original_train_data[:,0],original_train_data[:,1],'ro')
 pyplot.plot(frange,ans)
 
 pyplot.show()
