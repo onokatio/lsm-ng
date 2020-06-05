@@ -34,17 +34,6 @@ mytest_data = mytest_data.loc[:,:].to_numpy(dtype=object)
 
 #print(train_data[:,0])
 
-def plotw(w,option):
-
-    frange = numpy.arange(0,train_data[:,0].max(),1)
-
-    ans = []
-
-    for i in frange:
-        ans.append( f(i,w).item() )
-
-    pyplot.plot(frange,ans,option)
-
 
 def learning(train_index, test_index,lam, dimensionN):
     sum_x = []
@@ -93,15 +82,51 @@ def learning(train_index, test_index,lam, dimensionN):
 
     #pyplot.plot(frange,ans)
 
+def RMSE(mytest_data,w):
+    mytrain_output = []
+
+    for i in range(len(mytest_data)):
+        y = f(mytest_data[i][0], w)
+        mytrain_output.append(y.item())
+
+    #print(mytest_data[:,1])
+    #print(mytrain_output)
+    return numpy.sqrt(mean_squared_error(mytest_data[:,1],mytrain_output))
+
 def f(x,w):
     return sum(numpy.matrix(numpy.flip(numpy.logspace(0, len(w)-1, len(w), base=x))) * w)
+
+def plotw(w,option):
+
+    frange = numpy.arange(0,train_data[:,0].max(),1)
+
+    ans = []
+
+    for i in frange:
+        ans.append( f(i,w).item() )
+
+    pyplot.plot(frange,ans,option)
+
 
 def run_sklearning(dimensionN,k_closs_validation,lam,show):
     global_w = []
     index = 0;
     skf = KFold(n_splits=k_closs_validation, shuffle=True, random_state=None)
     for train_index, test_index in skf.split(train_data[:,0],train_data[:,1]):
-        w = learning(train_index, test_index, 10 ** lam, dimensionN)
+        
+        max_lam = 10
+
+        point = []
+        for i in range(-max_lam,max_lam):
+            point.insert(max_lam+i, 0)
+            w = learning(train_index, test_index, 10 ** i, dimensionN)
+            rmse = RMSE(mytest_data,w)
+            point[max_lam+i] = rmse
+            print("lam: 10^", i, "RMSE: ", point[max_lam+i])
+        bestlam = numpy.argsort(point)[0]
+        print("best lam is:", bestlam-max_lam)
+
+        w = learning(train_index, test_index, 10 ** bestlam, dimensionN)
         if show == True:
             plotw(w,'--')
         global_w.insert(index, w)
@@ -116,42 +141,45 @@ def run_sklearning(dimensionN,k_closs_validation,lam,show):
 
     return final_w
 
-def RMSE(mytest_data,w):
-    mytrain_output = []
-
-    for i in range(len(mytest_data)):
-        y = f(mytest_data[i][0], w)
-        mytrain_output.append(y.item())
-
-    #print(mytest_data[:,1])
-    #print(mytrain_output)
-    return numpy.sqrt(mean_squared_error(mytest_data[:,1],mytrain_output))
-
 dimensionN = 6
 k_closs_validation = 4
 lam = -5
 
 w = run_sklearning(dimensionN, k_closs_validation,lam,True)
-#pyplot.plot(train_data[:,0],train_data[:,1],'ro')
-#pyplot.plot(mytest_data[:,0],mytest_data[:,1],'go')
-#plotw(w,'')
+pyplot.plot(train_data[:,0],train_data[:,1],'ro')
+pyplot.plot(mytest_data[:,0],mytest_data[:,1],'go')
+plotw(w,'')
 print(w)
 
 rmse = RMSE(mytest_data,w)
 print(rmse)
-#pyplot.show()
+pyplot.show()
 
-with open("./w.csv", 'a') as f:
-    writer = csv.writer(f)
+"""
+with open("./w.csv", 'a') as file1:
+    writer = csv.writer(file1)
     writer.writerow(numpy.array(w).flatten())
 
 average_sample = 10
 
-with open("./w.csv") as f:
-    reader = csv.reader(f)
-    file = [row for row in reader]
+with open("./w.csv") as file2:
+    reader = csv.reader(file2, quoting=csv.QUOTE_NONNUMERIC)
+    data = [row for row in reader]
 
-print(numpy.array(file))
+data = numpy.array(data)
+w = []
+for i in range(dimensionN + 1):
+        w.insert(i,[sum(data[:,i]) / len(data)])
+
+print(w)
+pyplot.plot(train_data[:,0],train_data[:,1],'ro')
+pyplot.plot(mytest_data[:,0],mytest_data[:,1],'go')
+plotw(w,'')
+
+rmse = RMSE(mytest_data,w)
+print(rmse)
+pyplot.show()
+"""
 
 """
 max_lam = 10
