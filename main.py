@@ -120,13 +120,14 @@ def run_sklearning(dimensionN,k_closs_validation,lam,show):
         for i in range(-max_lam,max_lam):
             point.insert(max_lam+i, 0)
             w = learning(train_index, test_index, 10 ** i, dimensionN)
-            rmse = RMSE(mytest_data,w)
+            rmse = RMSE(train_data[test_index],w)
             point[max_lam+i] = rmse
             print("lam: 10^", i, "RMSE: ", point[max_lam+i])
         bestlam = numpy.argsort(point)[0]
         print("best lam is:", bestlam-max_lam)
 
-        w = learning(train_index, test_index, 10 ** bestlam, dimensionN)
+        #w = learning(train_index, test_index, 10 ** bestlam, dimensionN)
+        w = learning(train_index, test_index, 10 ** 0, dimensionN)
         if show == True:
             plotw(w,'--')
         global_w.insert(index, w)
