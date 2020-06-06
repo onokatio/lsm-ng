@@ -119,7 +119,7 @@ def f(x,w):
 
 def plotw(w,option):
 
-    frange = numpy.arange(0,train_data[:,0].max(),1)
+    frange = numpy.arange(0,train_data[:,0].max()+20,1)
 
     ans = []
 
@@ -147,16 +147,15 @@ def run_sklearning(dimensionN,k_closs_validation,lam,show):
         if show == True:
             plotw(w,'--')
 
+    print("100%")
     return (global_w,global_rmse)
 
 dimensionN = 6
-#dimensionN = 17
 k_closs_validation = len(train_data)
 #k_closs_validation = 4
 lam = -5
 
 (global_w, global_rmse) = run_sklearning(dimensionN, k_closs_validation,lam,False)
-print("100%")
 pyplot.plot(original_train_data[:,0],original_train_data[:,1],'go')
 pyplot.plot(train_data[:,0],train_data[:,1],'ro')
 
