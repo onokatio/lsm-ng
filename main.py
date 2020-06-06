@@ -114,15 +114,15 @@ def run_sklearning(dimensionN,k_closs_validation,lam,show):
     skf = KFold(n_splits=k_closs_validation, shuffle=True, random_state=None)
     for train_index, test_index in skf.split(train_data[:,0],train_data[:,1]):
         
-        max_lam = 50
+        max_lam = 20
 
         point = []
         for i in range(0,max_lam):
-            point.insert(i, 0)
-            w = learning(train_index, test_index, 10 ** -i, dimensionN)
+            w = learning(train_index, test_index, numpy.exp(-i), dimensionN)
             #if show == True:
             #    plotw(w,'--')
             rmse = RMSE(train_data[test_index],w)
+            point.insert(i, 0)
             point[i] = rmse
             print("lam: 10^ -", i, "RMSE: ", point[i])
         bestlam = numpy.argsort(point)[0]
