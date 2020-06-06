@@ -19,12 +19,15 @@ sum_x[n] == sum(x^n)
 sum_xy[n] == sum(x^n * y)
 """
 
-#avg = train_data.mean()[1]
-#std = train_data.std()[1]
+avg = train_data.mean()[1]
+std = train_data.std()[1]
 
 train_data = train_data.loc[:,:].to_numpy(dtype=object)
 mytest_data = mytest_data.loc[:,:].to_numpy(dtype=object)
 #original_train_data = original_train_data.loc[:,:].to_numpy(dtype=numpy.int64)
+
+#tmp = mytest_data.loc[:,0]
+#tmp[ tmp <  ]
 
 #print(abs((train_data[:,1] - avg)/std))
 
@@ -111,11 +114,13 @@ def plotw(w,option):
 
 def run_sklearning(dimensionN,k_closs_validation,lam,show):
     global_w = []
+    global_rmse = []
     index = 0;
     #skf = KFold(n_splits=k_closs_validation, shuffle=True, random_state=None)
     skf = ShuffleSplit(n_splits=k_closs_validation, random_state=None)
     for train_index, test_index in skf.split(train_data[:,0],train_data[:,1]):
         
+        """
         max_lam = 20
 
         point = []
@@ -135,18 +140,18 @@ def run_sklearning(dimensionN,k_closs_validation,lam,show):
             print("lam: 10^ -", i, "RMSE: ", point[i])
         bestlam = numpy.argsort(point)[0]
         print("best lam is:", bestlam)
+        """
 
         #w = learning(train_index, test_index, 10 ** bestlam, dimensionN)
         w = learning(train_index, test_index, 0, dimensionN)
         rmse = RMSE(train_data[test_index],w)
-        if rmse < 1000:
-            global_w.insert(index, w)
-            index+=1
-            if show == True:
-                plotw(w,'--')
-        else:
-            print("rmse", rmse, "is too high. skipping.")
+        global_w.insert(index, w)
+        global_rmse.insert(index, rmse)
+        index+=1
+        if show == True:
+            plotw(w,'--')
 
+    """
     final_w = []
     for i in range(dimensionN + 1):
         final_w.insert(i, [0])
@@ -154,17 +159,22 @@ def run_sklearning(dimensionN,k_closs_validation,lam,show):
         for j in range(len(global_w)):
             final_w[i][0] += global_w[j][i].item()
         final_w[i][0] /= len(global_w)
+    """
 
-    return final_w
+    return (global_w,global_rmse)
 
 dimensionN = 6
 #dimensionN = 17
 k_closs_validation = 4
 lam = -5
 
-w = run_sklearning(dimensionN, k_closs_validation,lam,True)
+(global_w, global_rmse) = run_sklearning(dimensionN, k_closs_validation,lam,True)
 pyplot.plot(train_data[:,0],train_data[:,1],'ro')
 pyplot.plot(mytest_data[:,0],mytest_data[:,1],'go')
+
+best_index = numpy.array(global_rmse).argmin()
+w = global_w[best_index]
+rmse = global_rmse[best_index]
 plotw(w,'')
 print(w)
 
