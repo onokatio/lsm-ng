@@ -91,16 +91,16 @@ def learning(train_index, test_index,lam, dimensionN):
     w = numpy.linalg.solve(left_matrix,right_matrix)
     return w
 
-def RMSE(mytest_data,w):
+def RMSE(data,w):
     mytrain_output = []
 
-    for i in range(len(mytest_data)):
-        y = f(mytest_data[i][0], w)
+    for i in range(len(data)):
+        y = f(data[i][0], w)
         mytrain_output.append(y.item())
 
-    #print(mytest_data[:,1])
+    #print(data[:,1])
     #print(mytrain_output)
-    return numpy.sqrt(mean_squared_error(mytest_data[:,1],mytrain_output))
+    return numpy.sqrt(mean_squared_error(data[:,1],mytrain_output))
 
 def f(x,w):
     return sum(numpy.matrix(numpy.flip(numpy.logspace(0, len(w)-1, len(w), base=x))) * w)
@@ -192,7 +192,7 @@ print(w)
 print("final test rmse: ", RMSE(mytest_data,w))
 
 #print(best_lam(dimensionN,k_closs_validation,False))
-#print(best_dimensionN(k_closs_validation, lam, False))
+print(best_dimensionN(k_closs_validation, lam, False))
 
 pyplot.plot(original_train_data[:,0],original_train_data[:,1],'go')
 pyplot.plot(train_data[:,0],train_data[:,1],'ro')
