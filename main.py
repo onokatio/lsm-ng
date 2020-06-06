@@ -1,3 +1,4 @@
+import sys
 import csv
 import numpy
 import pandas
@@ -10,8 +11,8 @@ from sklearn.metrics import mean_squared_error
 
 
 train_data = pandas.read_csv("data/lsmCompe_train.csv",header=None)
-#original_train_data = train_data
-train_data, mytest_data = train_test_split(train_data, test_size=0.25)
+original_train_data = pandas.read_csv("data/lsmCompe_train.csv",header=None)
+#train_data, mytest_data = train_test_split(train_data, test_size=0.25)
 test_data = pandas.read_csv("data/lsmCompe_test.csv",header=None)
 
 """
@@ -19,15 +20,31 @@ sum_x[n] == sum(x^n)
 sum_xy[n] == sum(x^n * y)
 """
 
-avg = train_data.mean()[1]
-std = train_data.std()[1]
+outlier_train_data = []
+
+outlier_detect_blocksize = 50
+
+for i in range(0, len(train_data), outlier_detect_blocksize):
+    tmp_train_data = train_data.iloc[i:i+outlier_detect_blocksize,1]
+
+    avg = tmp_train_data.mean()
+    std = tmp_train_data.std()
+
+    min_value = avg - std*2
+    max_value = avg + std*2
+
+    #outlier_train_data.append(tmp_train_data.loc[ tmp_train_data > max_value])
+    #outlier_train_data.append(tmp_train_data.loc[ tmp_train_data < min_value])
+
+    tmp_train_data.loc[ tmp_train_data < min_value] = None
+    tmp_train_data.loc[ tmp_train_data > max_value] = None
+
+train_data = train_data.dropna()
 
 train_data = train_data.loc[:,:].to_numpy(dtype=object)
-mytest_data = mytest_data.loc[:,:].to_numpy(dtype=object)
+original_train_data = original_train_data.loc[:,:].to_numpy(dtype=object)
+#mytest_data = mytest_data.loc[:,:].to_numpy(dtype=object)
 #original_train_data = original_train_data.loc[:,:].to_numpy(dtype=numpy.int64)
-
-#tmp = mytest_data.loc[:,0]
-#tmp[ tmp <  ]
 
 #print(abs((train_data[:,1] - avg)/std))
 
@@ -116,9 +133,12 @@ def run_sklearning(dimensionN,k_closs_validation,lam,show):
     global_w = []
     global_rmse = []
     index = 0;
-    #skf = KFold(n_splits=k_closs_validation, shuffle=True, random_state=None)
-    skf = ShuffleSplit(n_splits=k_closs_validation, random_state=None)
+    skf = KFold(n_splits=k_closs_validation)
+    #skf = ShuffleSplit(n_splits=k_closs_validation, random_state=None)
     for train_index, test_index in skf.split(train_data[:,0],train_data[:,1]):
+        #print("index:", index)
+        sys.stdout.write("%3d%%\r" % (index * 100 / len(train_data)))
+        sys.stdout.flush()
         
         """
         max_lam = 20
@@ -165,21 +185,24 @@ def run_sklearning(dimensionN,k_closs_validation,lam,show):
 
 dimensionN = 6
 #dimensionN = 17
-k_closs_validation = 4
+k_closs_validation = len(train_data)
+#k_closs_validation = 4
 lam = -5
 
-(global_w, global_rmse) = run_sklearning(dimensionN, k_closs_validation,lam,True)
+(global_w, global_rmse) = run_sklearning(dimensionN, k_closs_validation,lam,False)
+print("100%")
+pyplot.plot(original_train_data[:,0],original_train_data[:,1],'go')
 pyplot.plot(train_data[:,0],train_data[:,1],'ro')
-pyplot.plot(mytest_data[:,0],mytest_data[:,1],'go')
+#pyplot.plot(outlier_train_data[:,0],outlier_train_data[:,1],'go')
 
 best_index = numpy.array(global_rmse).argmin()
 w = global_w[best_index]
 rmse = global_rmse[best_index]
 plotw(w,'')
-print(w)
+print("w:", w)
 
-rmse = RMSE(mytest_data,w)
-print(rmse)
+print("best rmse:",rmse)
+print("average rmse:",numpy.average(global_rmse))
 pyplot.show()
 
 """
