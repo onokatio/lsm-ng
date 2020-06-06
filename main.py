@@ -87,7 +87,8 @@ def learning(train_index, test_index,lam, dimensionN):
     left_matrix = numpy.matrix(left_matrix)
     right_matrix = numpy.matrix(right_matrix)
 
-    w = left_matrix.I @ right_matrix
+    #w = left_matrix.I @ right_matrix
+    w = numpy.linalg.solve(left_matrix,right_matrix)
     return w
 
 def RMSE(mytest_data,w):
@@ -106,7 +107,7 @@ def f(x,w):
 
 def plotw(w,option):
 
-    frange = numpy.arange(0,train_data[:,0].max()+20,1)
+    frange = numpy.arange(0,train_data[:,0].max()+5,1)
 
     ans = []
 
@@ -165,21 +166,24 @@ def best_lam(dimensionN, k_closs_validation, show):
     return best_lam
 
 #dimensionN = 6
-dimensionN = 9
+#dimensionN = 9
+dimensionN = 20
 k_closs_validation = len(train_data)
 #k_closs_validation = 4
 #k_closs_validation = 0
 #lam = numpy.exp(-5)
 lam = 0
 
-(w,rmse) = get_average_rmse_for_kcv(dimensionN, k_closs_validation,lam, False)
+(w,rmse) = get_average_rmse_for_kcv(dimensionN, k_closs_validation,lam, True)
 plotw(w,'')
+#print(w)
 print("final test rmse: ", RMSE(mytest_data,w))
 
 #print(best_lam(dimensionN,k_closs_validation,False))
 
 pyplot.plot(original_train_data[:,0],original_train_data[:,1],'go')
 pyplot.plot(train_data[:,0],train_data[:,1],'ro')
+pyplot.plot(mytest_data[:,0],mytest_data[:,1],'bo')
 pyplot.show()
 
 """
