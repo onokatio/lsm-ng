@@ -22,7 +22,7 @@ sum_xy[n] == sum(x^n * y)
 
 outlier_train_data = []
 
-outlier_detect_blocksize = 50
+outlier_detect_blocksize = 25
 
 for i in range(0, len(train_data), outlier_detect_blocksize):
     tmp_train_data = train_data.iloc[i:i+outlier_detect_blocksize,1]
@@ -150,23 +150,27 @@ def run_sklearning(dimensionN,k_closs_validation,lam,show):
     print("100%")
     return (global_w,global_rmse)
 
+
+def get_average_rmse(dimensionN, k_closs_validation, lam, show):
+    (global_w, global_rmse) = run_sklearning(dimensionN, k_closs_validation,lam,False)
+
+    best_index = numpy.array(global_rmse).argmin()
+    rmse = global_rmse[best_index]
+    if show == True:
+        w = global_w[best_index]
+        plotw(w,'')
+    print("w:", w)
+    print("average rmse:",numpy.average(global_rmse))
+
 dimensionN = 6
 k_closs_validation = len(train_data)
 #k_closs_validation = 4
 lam = -5
 
-(global_w, global_rmse) = run_sklearning(dimensionN, k_closs_validation,lam,False)
+get_average_rmse(dimensionN, k_closs_validation,lam, True)
+
 pyplot.plot(original_train_data[:,0],original_train_data[:,1],'go')
 pyplot.plot(train_data[:,0],train_data[:,1],'ro')
-
-best_index = numpy.array(global_rmse).argmin()
-w = global_w[best_index]
-rmse = global_rmse[best_index]
-plotw(w,'')
-print("w:", w)
-
-print("best rmse:",rmse)
-print("average rmse:",numpy.average(global_rmse))
 pyplot.show()
 
 """
