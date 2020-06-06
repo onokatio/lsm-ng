@@ -54,7 +54,7 @@ def learning(train_index, test_index,lam, dimensionN):
             item.insert(j, sum_x[2*dimensionN - i - j])
         left_matrix.insert(i, item)
 
-    for i in range(2,dimensionN + 1):
+    for i in range(0,dimensionN):
         left_matrix[i][i] += lam
 
     for i in range(dimensionN + 1):
@@ -114,35 +114,43 @@ def run_sklearning(dimensionN,k_closs_validation,lam,show):
     skf = KFold(n_splits=k_closs_validation, shuffle=True, random_state=None)
     for train_index, test_index in skf.split(train_data[:,0],train_data[:,1]):
         
-        max_lam = 10
+        max_lam = 50
 
         point = []
-        for i in range(-max_lam,max_lam):
-            point.insert(max_lam+i, 0)
-            w = learning(train_index, test_index, 10 ** i, dimensionN)
+        for i in range(0,max_lam):
+            point.insert(i, 0)
+            w = learning(train_index, test_index, 10 ** -i, dimensionN)
+            #if show == True:
+            #    plotw(w,'--')
             rmse = RMSE(train_data[test_index],w)
-            point[max_lam+i] = rmse
-            print("lam: 10^", i, "RMSE: ", point[max_lam+i])
+            point[i] = rmse
+            print("lam: 10^ -", i, "RMSE: ", point[i])
         bestlam = numpy.argsort(point)[0]
-        print("best lam is:", bestlam-max_lam)
+        print("best lam is:", bestlam)
 
         #w = learning(train_index, test_index, 10 ** bestlam, dimensionN)
-        w = learning(train_index, test_index, 10 ** 0, dimensionN)
-        if show == True:
-            plotw(w,'--')
-        global_w.insert(index, w)
-        index+=1
+        w = learning(train_index, test_index, 0, dimensionN)
+        rmse = RMSE(train_data[test_index],w)
+        if rmse < 600:
+            global_w.insert(index, w)
+            index+=1
+            if show == True:
+                plotw(w,'--')
+        else:
+            print("rmse", rmse, "is too high. skipping.")
 
     final_w = []
     for i in range(dimensionN + 1):
         final_w.insert(i, [0])
-        for j in range(k_closs_validation):
+        #for j in range(k_closs_validation):
+        for j in range(len(global_w)):
             final_w[i][0] += global_w[j][i].item()
-        final_w[i][0] /= k_closs_validation
+        final_w[i][0] /= len(global_w)
 
     return final_w
 
-dimensionN = 6
+#dimensionN = 6
+dimensionN = 17
 k_closs_validation = 4
 lam = -5
 
@@ -161,7 +169,6 @@ with open("./w.csv", 'a') as file1:
     writer = csv.writer(file1)
     writer.writerow(numpy.array(w).flatten())
 
-average_sample = 10
 
 with open("./w.csv") as file2:
     reader = csv.reader(file2, quoting=csv.QUOTE_NONNUMERIC)
@@ -206,8 +213,9 @@ pyplot.show()
 """
 
 """
-max_dimension = 13
-for aaa in range(10):
+average_sample = 10
+max_dimension = 20
+for aaa in range(1):
     point = []
     for i in range(max_dimension):
         point.insert(i, 0)
