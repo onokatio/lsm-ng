@@ -12,7 +12,6 @@ from sklearn.metrics import mean_squared_error
 
 train_data = pandas.read_csv("data/lsmCompe_train.csv",header=None)
 original_train_data = pandas.read_csv("data/lsmCompe_train.csv",header=None)
-#train_data, mytest_data = train_test_split(train_data, test_size=0.25)
 test_data = pandas.read_csv("data/lsmCompe_test.csv",header=None)
 
 """
@@ -22,26 +21,28 @@ sum_xy[n] == sum(x^n * y)
 
 outlier_train_data = []
 
-outlier_detect_blocksize = 50
+outlier_detect_blocksize = 100
 
 #for i in range(0, len(train_data), outlier_detect_blocksize):
-for i in range(0, len(train_data), 25):
+for i in range(0, len(train_data), 100):
     tmp_train_data = train_data.iloc[i:i+outlier_detect_blocksize,1]
 
     avg = tmp_train_data.mean()
     std = tmp_train_data.std()
 
-    min_value = avg - std*1.5
-    max_value = avg + std*1.5
+    min_value = avg - std*2
+    max_value = avg + std*2
 
     tmp_train_data.loc[ tmp_train_data < min_value] = None
     tmp_train_data.loc[ tmp_train_data > max_value] = None
 
 train_data = train_data.dropna()
 
+train_data, mytest_data = train_test_split(train_data, test_size=0.1)
+
 train_data = train_data.loc[:,:].to_numpy(dtype=object)
 original_train_data = original_train_data.loc[:,:].to_numpy(dtype=object)
-#mytest_data = mytest_data.loc[:,:].to_numpy(dtype=object)
+mytest_data = mytest_data.loc[:,:].to_numpy(dtype=object)
 #original_train_data = original_train_data.loc[:,:].to_numpy(dtype=numpy.int64)
 
 #print(abs((train_data[:,1] - avg)/std))
@@ -137,26 +138,27 @@ def run_sklearning(dimensionN,k_closs_validation,lam,show):
 
     return (global_w,global_rmse)
 
-def get_average_rmse(dimensionN, k_closs_validation, lam, show):
+def get_average_rmse_for_kcv(dimensionN, k_closs_validation, lam, show):
     (global_w, global_rmse) = run_sklearning(dimensionN, k_closs_validation,lam,False)
 
     best_index = numpy.array(global_rmse).argmin()
     rmse = global_rmse[best_index]
+    w = global_w[best_index]
     if show == True:
-        w = global_w[best_index]
         plotw(w,'')
     print("average rmse:",numpy.average(global_rmse))
+    return (w,rmse)
 
 #dimensionN = 6
 dimensionN = 9
-#k_closs_validation = len(train_data)
+k_closs_validation = len(train_data)
 #k_closs_validation = 4
-#k_closs_validation = 3
-k_closs_validation = 0
+#k_closs_validation = 0
 lam = numpy.exp(-5)
 #lam = 0
 
-get_average_rmse(dimensionN, k_closs_validation,lam, True)
+(w,rmse) = get_average_rmse_for_kcv(dimensionN, k_closs_validation,lam, True)
+print("final test rmse: ", RMSE(mytest_data,w))
 
 """
 for i in range(1,15):
