@@ -38,7 +38,7 @@ for i in range(0, len(train_data), 100):
 
 train_data = train_data.dropna()
 
-train_data, mytest_data = train_test_split(train_data, test_size=0.1)
+train_data, mytest_data = train_test_split(train_data, test_size=0.01)
 
 train_data = train_data.loc[:,:].to_numpy(dtype=object)
 original_train_data = original_train_data.loc[:,:].to_numpy(dtype=object)
@@ -192,7 +192,7 @@ print(w)
 print("final test rmse: ", RMSE(mytest_data,w))
 
 #print(best_lam(dimensionN,k_closs_validation,False))
-print(best_dimensionN(k_closs_validation, lam, False))
+#print(best_dimensionN(k_closs_validation, lam, False))
 
 pyplot.plot(original_train_data[:,0],original_train_data[:,1],'go')
 pyplot.plot(train_data[:,0],train_data[:,1],'ro')
