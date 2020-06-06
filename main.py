@@ -22,19 +22,17 @@ sum_xy[n] == sum(x^n * y)
 
 outlier_train_data = []
 
-outlier_detect_blocksize = 25
+outlier_detect_blocksize = 50
 
-for i in range(0, len(train_data), outlier_detect_blocksize):
+#for i in range(0, len(train_data), outlier_detect_blocksize):
+for i in range(0, len(train_data), 25):
     tmp_train_data = train_data.iloc[i:i+outlier_detect_blocksize,1]
 
     avg = tmp_train_data.mean()
     std = tmp_train_data.std()
 
-    min_value = avg - std*2
-    max_value = avg + std*2
-
-    #outlier_train_data.append(tmp_train_data.loc[ tmp_train_data > max_value])
-    #outlier_train_data.append(tmp_train_data.loc[ tmp_train_data < min_value])
+    min_value = avg - std*1.5
+    max_value = avg + std*1.5
 
     tmp_train_data.loc[ tmp_train_data < min_value] = None
     tmp_train_data.loc[ tmp_train_data > max_value] = None
@@ -85,23 +83,7 @@ def learning(train_index, test_index,lam, dimensionN):
     right_matrix = numpy.matrix(right_matrix)
 
     w = left_matrix.I @ right_matrix
-    #global_w.insert(index, w)
     return w
-
-
-    #pyplot.plot(train_data[train_index,0],train_data[train_index,1],'ro')
-
-    ##pyplot.plot(outlier_train_data[train_index,0],outlier_train_data[train_index,1],'bo')
-    ##pyplot.plot(train_data[test_index,0],train_data[test_index,1],'go')
-
-    #frange = numpy.arange(0,original_train_data[:,0].max(),1)
-
-    #ans = []
-
-    #for i in frange:
-    #    ans.append( f(i,w).item() )
-
-    #pyplot.plot(frange,ans)
 
 def RMSE(mytest_data,w):
     mytrain_output = []
@@ -130,26 +112,30 @@ def plotw(w,option):
 
 
 def run_sklearning(dimensionN,k_closs_validation,lam,show):
-    global_w = []
-    global_rmse = []
-    index = 0;
-    skf = KFold(n_splits=k_closs_validation)
-    #skf = ShuffleSplit(n_splits=k_closs_validation, random_state=None)
-    for train_index, test_index in skf.split(train_data[:,0],train_data[:,1]):
-        sys.stdout.write("%3d%%\r" % (index * 100 / len(train_data)))
-        sys.stdout.flush()
-        
-        w = learning(train_index, test_index, lam, dimensionN)
-        rmse = RMSE(train_data[test_index],w)
-        global_w.insert(index, w)
-        global_rmse.insert(index, rmse)
-        index+=1
-        if show == True:
-            plotw(w,'--')
+    if k_closs_validation == 0:
+        global_w = [learning(range(len(train_data)), 0, lam, dimensionN)]
+        global_rmse = [-1]
+    else:
+        global_w = []
+        global_rmse = []
+        index = 0;
+        skf = KFold(n_splits=k_closs_validation)
+        #skf = ShuffleSplit(n_splits=k_closs_validation, random_state=None)
+        for train_index, test_index in skf.split(train_data[:,0],train_data[:,1]):
+            sys.stdout.write("%3d%%\r" % (index * 100 / len(train_data)))
+            sys.stdout.flush()
+            
+            w = learning(train_index, test_index, lam, dimensionN)
+            rmse = RMSE(train_data[test_index],w)
+            global_w.insert(index, w)
+            global_rmse.insert(index, rmse)
+            index+=1
+            if show == True:
+                plotw(w,'--')
 
-    print("100%")
+        print("100%")
+
     return (global_w,global_rmse)
-
 
 def get_average_rmse(dimensionN, k_closs_validation, lam, show):
     (global_w, global_rmse) = run_sklearning(dimensionN, k_closs_validation,lam,False)
@@ -159,15 +145,24 @@ def get_average_rmse(dimensionN, k_closs_validation, lam, show):
     if show == True:
         w = global_w[best_index]
         plotw(w,'')
-    print("w:", w)
     print("average rmse:",numpy.average(global_rmse))
 
-dimensionN = 6
-k_closs_validation = len(train_data)
+#dimensionN = 6
+dimensionN = 9
+#k_closs_validation = len(train_data)
 #k_closs_validation = 4
-lam = -5
+#k_closs_validation = 3
+k_closs_validation = 0
+lam = numpy.exp(-5)
+#lam = 0
 
 get_average_rmse(dimensionN, k_closs_validation,lam, True)
+
+"""
+for i in range(1,15):
+    print("dimensionN:", i)
+    get_average_rmse(i, k_closs_validation,lam, True)
+"""
 
 pyplot.plot(original_train_data[:,0],original_train_data[:,1],'go')
 pyplot.plot(train_data[:,0],train_data[:,1],'ro')
