@@ -4,6 +4,7 @@ import pandas
 import matplotlib.pyplot as pyplot
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import KFold
+from sklearn.model_selection import ShuffleSplit
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 
@@ -111,7 +112,8 @@ def plotw(w,option):
 def run_sklearning(dimensionN,k_closs_validation,lam,show):
     global_w = []
     index = 0;
-    skf = KFold(n_splits=k_closs_validation, shuffle=True, random_state=None)
+    #skf = KFold(n_splits=k_closs_validation, shuffle=True, random_state=None)
+    skf = ShuffleSplit(n_splits=k_closs_validation, random_state=None)
     for train_index, test_index in skf.split(train_data[:,0],train_data[:,1]):
         
         max_lam = 20
