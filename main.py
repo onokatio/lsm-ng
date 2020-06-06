@@ -117,6 +117,12 @@ def run_sklearning(dimensionN,k_closs_validation,lam,show):
         max_lam = 20
 
         point = []
+        w = learning(train_index, test_index, 0, dimensionN)
+        rmse = RMSE(train_data[test_index],w)
+        point.insert(0, 0)
+        point[0] = rmse
+        print("lam: 0 RMSE: ", point[0])
+
         for i in range(0,max_lam):
             w = learning(train_index, test_index, numpy.exp(-i), dimensionN)
             #if show == True:
@@ -131,7 +137,7 @@ def run_sklearning(dimensionN,k_closs_validation,lam,show):
         #w = learning(train_index, test_index, 10 ** bestlam, dimensionN)
         w = learning(train_index, test_index, 0, dimensionN)
         rmse = RMSE(train_data[test_index],w)
-        if rmse < 600:
+        if rmse < 1000:
             global_w.insert(index, w)
             index+=1
             if show == True:
@@ -149,8 +155,8 @@ def run_sklearning(dimensionN,k_closs_validation,lam,show):
 
     return final_w
 
-#dimensionN = 6
-dimensionN = 17
+dimensionN = 6
+#dimensionN = 17
 k_closs_validation = 4
 lam = -5
 
