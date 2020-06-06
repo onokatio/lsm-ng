@@ -136,50 +136,16 @@ def run_sklearning(dimensionN,k_closs_validation,lam,show):
     skf = KFold(n_splits=k_closs_validation)
     #skf = ShuffleSplit(n_splits=k_closs_validation, random_state=None)
     for train_index, test_index in skf.split(train_data[:,0],train_data[:,1]):
-        #print("index:", index)
         sys.stdout.write("%3d%%\r" % (index * 100 / len(train_data)))
         sys.stdout.flush()
         
-        """
-        max_lam = 20
-
-        point = []
-        w = learning(train_index, test_index, 0, dimensionN)
-        rmse = RMSE(train_data[test_index],w)
-        point.insert(0, 0)
-        point[0] = rmse
-        print("lam: 0 RMSE: ", point[0])
-
-        for i in range(0,max_lam):
-            w = learning(train_index, test_index, numpy.exp(-i), dimensionN)
-            #if show == True:
-            #    plotw(w,'--')
-            rmse = RMSE(train_data[test_index],w)
-            point.insert(i, 0)
-            point[i] = rmse
-            print("lam: 10^ -", i, "RMSE: ", point[i])
-        bestlam = numpy.argsort(point)[0]
-        print("best lam is:", bestlam)
-        """
-
-        #w = learning(train_index, test_index, 10 ** bestlam, dimensionN)
-        w = learning(train_index, test_index, 0, dimensionN)
+        w = learning(train_index, test_index, lam, dimensionN)
         rmse = RMSE(train_data[test_index],w)
         global_w.insert(index, w)
         global_rmse.insert(index, rmse)
         index+=1
         if show == True:
             plotw(w,'--')
-
-    """
-    final_w = []
-    for i in range(dimensionN + 1):
-        final_w.insert(i, [0])
-        #for j in range(k_closs_validation):
-        for j in range(len(global_w)):
-            final_w[i][0] += global_w[j][i].item()
-        final_w[i][0] /= len(global_w)
-    """
 
     return (global_w,global_rmse)
 
@@ -193,7 +159,6 @@ lam = -5
 print("100%")
 pyplot.plot(original_train_data[:,0],original_train_data[:,1],'go')
 pyplot.plot(train_data[:,0],train_data[:,1],'ro')
-#pyplot.plot(outlier_train_data[:,0],outlier_train_data[:,1],'go')
 
 best_index = numpy.array(global_rmse).argmin()
 w = global_w[best_index]
