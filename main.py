@@ -159,11 +159,22 @@ def best_lam(dimensionN, k_closs_validation, show):
     best_lam = 0
     best_rmse = 1000
     for i in range(0,20):
-        (w,rmse) = get_average_rmse_for_kcv(dimensionN, k_closs_validation,i, show)
+        print("lam:", -i)
+        (w,rmse) = get_average_rmse_for_kcv(dimensionN, k_closs_validation,numpy.exp(-i), show)
         if rmse < best_rmse:
             best_rmse = rmse
-            best_lam = lam
+            best_lam = -i
     return best_lam
+
+def best_dimensionN(k_closs_validation, lam, show):
+    best_dimensionN = 0
+    best_rmse = 1000
+    for i in range(1,20):
+        (w,rmse) = get_average_rmse_for_kcv(i, k_closs_validation, lam, show)
+        if rmse < best_rmse:
+            best_rmse = rmse
+            best_dimensionN = i
+    return best_dimensionN
 
 #dimensionN = 6
 #dimensionN = 9
@@ -174,12 +185,14 @@ k_closs_validation = len(train_data)
 #lam = numpy.exp(-5)
 lam = 0
 
+
 (w,rmse) = get_average_rmse_for_kcv(dimensionN, k_closs_validation,lam, True)
 plotw(w,'')
-#print(w)
+print(w)
 print("final test rmse: ", RMSE(mytest_data,w))
 
 #print(best_lam(dimensionN,k_closs_validation,False))
+#print(best_dimensionN(k_closs_validation, lam, False))
 
 pyplot.plot(original_train_data[:,0],original_train_data[:,1],'go')
 pyplot.plot(train_data[:,0],train_data[:,1],'ro')
