@@ -149,22 +149,29 @@ def get_average_rmse_for_kcv(dimensionN, k_closs_validation, lam, show):
     print("average rmse:",numpy.average(global_rmse))
     return (w,rmse)
 
+def best_lam(dimensionN, k_closs_validation, show):
+    best_lam = 0
+    best_rmse = 1000
+    for i in range(0,20):
+        (w,rmse) = get_average_rmse_for_kcv(dimensionN, k_closs_validation,i, show)
+        if rmse < best_rmse:
+            best_rmse = rmse
+            best_lam = lam
+    return best_lam
+
 #dimensionN = 6
 dimensionN = 9
 k_closs_validation = len(train_data)
 #k_closs_validation = 4
 #k_closs_validation = 0
-lam = numpy.exp(-5)
-#lam = 0
+#lam = numpy.exp(-5)
+lam = 0
 
-(w,rmse) = get_average_rmse_for_kcv(dimensionN, k_closs_validation,lam, True)
+(w,rmse) = get_average_rmse_for_kcv(dimensionN, k_closs_validation,lam, False)
+plotw(w,'')
 print("final test rmse: ", RMSE(mytest_data,w))
 
-"""
-for i in range(1,15):
-    print("dimensionN:", i)
-    get_average_rmse(i, k_closs_validation,lam, True)
-"""
+#print(best_lam(dimensionN,k_closs_validation,False))
 
 pyplot.plot(original_train_data[:,0],original_train_data[:,1],'go')
 pyplot.plot(train_data[:,0],train_data[:,1],'ro')
@@ -195,71 +202,7 @@ print(rmse)
 pyplot.show()
 """
 
-"""
 max_lam = 10
-
-for aaa in range(10):
-    point = []
-    for i in range(-max_lam,max_lam):
-        point.insert(max_lam+i, 0)
-        for j in range(average_sample):
-            w = run_sklearning(dimensionN, k_closs_validation,i,False)
-            #pyplot.plot(train_data[:,0],train_data[:,1],'ro')
-            #pyplot.plot(mytest_data[:,0],mytest_data[:,1],'go')
-            #plotw(w,'')
-            #print(w)
-
-            rmse = RMSE(mytest_data,w)
-            point[max_lam+i] += rmse
-        point[max_lam+i] /= average_sample
-        print("lam: 10^", i, "RMSE: ", point[max_lam+i])
-    print("best lam is:", numpy.argsort(point)[0]-max_lam)
-    pyplot.plot(range(-max_lam,max_lam),point)
-pyplot.show()
-"""
-
-"""
 average_sample = 10
 max_dimension = 20
-for aaa in range(1):
-    point = []
-    for i in range(max_dimension):
-        point.insert(i, 0)
-        for j in range(average_sample):
-            w = run_sklearning(i, k_closs_validation,0,False)
-            #pyplot.plot(train_data[:,0],train_data[:,1],'ro')
-            #pyplot.plot(mytest_data[:,0],mytest_data[:,1],'go')
-            #plotw(w,'')
-            #print(w)
-
-            rmse = RMSE(mytest_data,w)
-            point[i] += rmse
-        point[i] /= average_sample
-        print("dimensionN:", i, "RMSE: ", point[i])
-    pyplot.plot(range(max_dimension),point)
-    print("best dimensionN is:", numpy.argsort(point)[0])
-pyplot.show()
-"""
-
-"""
-max_k_closs = 15 #10?
-for aaa in range(10):
-    point = [1000]
-    for i in range(1,max_k_closs):
-        point.insert(i, 0)
-        for j in range(average_sample):
-            w = run_sklearning(i, k_closs_validation,0,False)
-            #pyplot.plot(train_data[:,0],train_data[:,1],'ro')
-            #pyplot.plot(mytest_data[:,0],mytest_data[:,1],'go')
-            #plotw(w,'')
-            #print(w)
-
-            rmse = RMSE(mytest_data,w)
-            point[i] += rmse
-        point[i] /= average_sample
-        print("k:", i, "RMSE: ", point[i])
-    pyplot.plot(range(0,max_k_closs),point)
-    print("best k is:", numpy.argsort(point)[0])
-
-pyplot.show()
-"""
+max_k_closs = 15
