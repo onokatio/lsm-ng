@@ -54,6 +54,10 @@ mytest_data = mytest_data.loc[:,:].to_numpy(dtype=object)
 
 #print(train_data[:,0])
 
+def learning2(train_index, test_index, lam, dimensionN):
+    param = numpy.polyfit(train_data[train_index,0].tolist(),train_data[train_index,1].tolist(),dimensionN)
+    param = numpy.matrix([[i] for i in param])
+    return param
 
 def learning(train_index, test_index,lam, dimensionN):
     sum_x = []
@@ -126,6 +130,7 @@ def run_sklearning(dimensionN,k_closs_validation,lam,show):
             sys.stdout.write("%3d%%\r" % (index * 100 / len(train_data)))
             sys.stdout.flush()
             
+            #w = learning2(train_index, test_index, lam, dimensionN)
             w = learning(train_index, test_index, lam, dimensionN)
             rmse = RMSE(train_data[test_index],w)
             global_w.insert(index, w)
