@@ -193,14 +193,12 @@ pyplot.plot(train_data[:,0],train_data[:,1],'ro')
 #pyplot.plot(mytest_data[:,0],mytest_data[:,1],'bo')
 pyplot.show()
 
-"""
 with open("./w/%d-%d-para.txt" % (int(best_rmse*10),std),mode='w') as parafile:
     parafile.write("次元:%d\n" % (len(w)-1))
     parafile.write("パラメータ\n")
     for i in range(len(w)):
         parafile.write(str(w[i].item()))
         parafile.write("\n")
-"""
 
 """
 with open("./w.csv", 'a') as file1:
