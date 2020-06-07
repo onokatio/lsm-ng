@@ -42,17 +42,7 @@ train_data, mytest_data = train_test_split(train_data, test_size=0.01)
 
 train_data = train_data.loc[:,:].to_numpy(dtype=object)
 original_train_data = original_train_data.loc[:,:].to_numpy(dtype=object)
-mytest_data = mytest_data.loc[:,:].to_numpy(dtype=object)
-#original_train_data = original_train_data.loc[:,:].to_numpy(dtype=numpy.int64)
-
-#print(abs((train_data[:,1] - avg)/std))
-
-#train_data = train_data[ abs((train_data[:,1] - avg)/std) < 2 ]
-#outlier_train_data = train_data[ abs((train_data[:,1] - avg)/std) >= 2 ]
-
-#print(outlier_train_data)
-
-#print(train_data[:,0])
+#mytest_data = mytest_data.loc[:,:].to_numpy(dtype=object)
 
 def learning2(train_index, test_index, lam, dimensionN):
     param = numpy.polyfit(train_data[train_index,0].tolist(),train_data[train_index,1].tolist(),dimensionN)
@@ -153,7 +143,9 @@ def get_average_rmse_for_kcv(dimensionN, k_closs_validation, lam, show):
     if show == True:
         plotw(w,'')
     print("average rmse:",numpy.average(global_rmse))
-    return (w,rmse)
+    print("best rmse:",rmse)
+    print("std of rmse:",numpy.std(global_rmse))
+    return (w,rmse,numpy.average(global_rmse),numpy.std(global_rmse))
 
 def best_lam(dimensionN, k_closs_validation, show):
     best_lam = 0
@@ -169,8 +161,8 @@ def best_lam(dimensionN, k_closs_validation, show):
 def best_dimensionN(k_closs_validation, lam, show):
     best_dimensionN = 0
     best_rmse = 1000
-    for i in range(1,20):
-        (w,rmse) = get_average_rmse_for_kcv(i, k_closs_validation, lam, show)
+    for i in range(1,30):
+        (w,a,rmse) = get_average_rmse_for_kcv(i, k_closs_validation, lam, show)
         if rmse < best_rmse:
             best_rmse = rmse
             best_dimensionN = i
@@ -186,18 +178,26 @@ k_closs_validation = len(train_data)
 lam = 0
 
 
-(w,rmse) = get_average_rmse_for_kcv(dimensionN, k_closs_validation,lam, True)
+(w,rmse,best_rmse,std) = get_average_rmse_for_kcv(dimensionN, k_closs_validation,lam, True)
 plotw(w,'')
+#print("final test rmse: ", RMSE(mytest_data,w))
 print(w)
-print("final test rmse: ", RMSE(mytest_data,w))
 
 #print(best_lam(dimensionN,k_closs_validation,False))
 #print(best_dimensionN(k_closs_validation, lam, False))
 
 pyplot.plot(original_train_data[:,0],original_train_data[:,1],'go')
 pyplot.plot(train_data[:,0],train_data[:,1],'ro')
-pyplot.plot(mytest_data[:,0],mytest_data[:,1],'bo')
-pyplot.show()
+#pyplot.plot(mytest_data[:,0],mytest_data[:,1],'bo')
+#pyplot.show()
+
+#with open("./w/" + int(best_rmse*10) + "para.txt",mode='w') as parafile:
+with open("./w/%d-%d-para.txt" % (int(best_rmse*10),std),mode='w') as parafile:
+    parafile.write("次元:%d\n" % (len(w)-1))
+    parafile.write("パラメータ\n")
+    for i in range(len(w)):
+        parafile.write(str(w[i].item()))
+        parafile.write("\n")
 
 """
 with open("./w.csv", 'a') as file1:
