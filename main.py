@@ -181,16 +181,16 @@ k_closs_validation = len(train_data)
 lam = 0
 
 
-#(w,rmse,best_rmse,std) = get_average_rmse_for_kcv(dimensionN, k_closs_validation,lam, True)
-#plotw(w,'')
-#print(w)
+(w,rmse,best_rmse,std) = get_average_rmse_for_kcv(dimensionN, k_closs_validation,lam, True)
+plotw(w,'')
+print(w)
 
 #print(best_lam(dimensionN,k_closs_validation,False))
 #print(best_dimensionN(k_closs_validation, lam, False))
 
 pyplot.plot(original_train_data[:,0],original_train_data[:,1],'go')
 pyplot.plot(train_data[:,0],train_data[:,1],'ro')
-pyplot.plot(mytest_data[:,0],mytest_data[:,1],'bo')
+#pyplot.plot(mytest_data[:,0],mytest_data[:,1],'bo')
 pyplot.show()
 
 """
